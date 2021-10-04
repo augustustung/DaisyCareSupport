@@ -9,7 +9,7 @@ export const loadConversation = (userId, userRole, token) => async (dispatch) =>
 
     let res = {};
     if (userRole === "R2")
-        res = await SERVICES.userGetAllAdminOnline(token)
+        res = await SERVICES.userGetAllAdminOnline(userId, token)
     else
         res = await SERVICES.adminGetAllConversation(userId, token)
     if (res) {

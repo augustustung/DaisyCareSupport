@@ -1,7 +1,7 @@
 import axios from './axios'
 
-const userGetAllAdminOnline = (token) => {
-    return axios.get(`/api/get-all-channel-online`, {
+const userGetAllAdminOnline = (userId, token) => {
+    return axios.get(`/api/get-all-channel-online?userId=${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
     }).catch(e => {
         return e.response && e.response.status

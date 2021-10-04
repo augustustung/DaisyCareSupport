@@ -64,7 +64,7 @@ const MessageList = ({
                 prevMessage: messageDetails[messageDetails.length - 1]._id
             }))
         } else {
-            allMessages.length > 0 && setState(prev => ({
+            setState(prev => ({
                 ...prev,
                 prevLength: 0,
                 prevMessage: null,
@@ -73,52 +73,56 @@ const MessageList = ({
         }
     }
 
-    useEffect(() => {
-        socket = io("http://192.168.1.103:8080")
 
-        socket.emit('join', { userId: userId, userName: userName, roomId: conversationId }, (e) => {
+    useEffect(() => {
+        _onReloadMessages()
+    }, [])
+
+    useEffect(() => {
+        socket = io("https://daisycare-support.herokuapp.com")
+
+        socket.emit('join', { userId: userId, userName: userName, roomId: conversationId }, async (e) => {
             e && alert('connect error', e)
-            _onReloadMessages()
+            if (
+                messageDetails &&
+                messageDetails.length > 0 &&
+                (
+                    messageDetails[messageDetails.length - 1]._id !== prevMessage
+                    || messageDetails.length !== prevLength
+                )
+            ) {
+                await _onReloadMessages()
+            }
         })
 
         return () => {
             socket.disconnect()
             socket.off()
         }
-    }, [])
+    }, [_onReloadMessages])
 
     useEffect(() => {
-        socket.once('receiveMessage', async () => {
+        socket.on('receiveMessage', async () => {
             await _onReloadMessages();
         })
     }, [_onReloadMessages])
 
-    useEffect(() => {
-        if
-            (messageDetails &&
-            messageDetails.length > 0 &&
-            (messageDetails[messageDetails.length - 1]._id !== prevMessage
-                || messageDetails.length !== prevLength)
-        ) {
-            _onReloadMessages()
-        }
-    }, [messageDetails, prevLength, prevMessage, _onReloadMessages])
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (!isMessageEmpty(textMessage)) {
-            await onMessageSubmitted({
-                _id: conversationId,
-                text: textMessage,
-                senderId: userId,
-                userId: userId,
-                createdAt: new Date(),
-                token: token,
-                adminId: adminId._id
-            });
             await socket.emit('sendMessage',
                 { roomId: conversationId, senderId: userId },
                 async (senderId) => {
+                    await onMessageSubmitted({
+                        _id: conversationId,
+                        text: textMessage,
+                        senderId: userId,
+                        userId: userId,
+                        createdAt: new Date(),
+                        token: token,
+                        adminId: adminId._id
+                    });
+
                     if (senderId === userId)
                         await _onReloadMessages()
                 })
@@ -144,12 +148,14 @@ const MessageList = ({
     return (
         <>
             <div id="chat-message-list">
-                {allMessages.length > 0 && allMessages.map((message, index) => {
+                {allMessages.length > 0 ? allMessages.map((message, index) => {
                     return <Message
                         key={index}
                         isMyMessage={message.senderId === userId}
                         message={message} />;
-                })}
+                }) : (
+                    <></>
+                )}
             </div>
             <form id="chat-form" onSubmit={handleFormSubmit}>
                 <div title="Add Attachment">
