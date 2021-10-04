@@ -1,42 +1,42 @@
 import axios from './axios'
 
-const userGetAllAdminOnline = (userId, token) => {
-    return axios.get(`/api/get-all-channel-online?userId=${userId}`, {
-        headers: { Authorization: `Bearer ${token}`}
+const userGetAllAdminOnline = (token) => {
+    return axios.get(`/api/get-all-channel-online`, {
+        headers: { Authorization: `Bearer ${token}` }
     }).catch(e => {
-        return e.response.status
+        return e.response && e.response.status
     })
 }
 
 const adminGetAllConversation = (adminId, token) => {
     return axios.get(`/api/get-all-user-inbox?adminId=${adminId}`, {
-        headers: { Authorization: `Bearer ${token}`}
+        headers: { Authorization: `Bearer ${token}` }
     }).catch(e => {
-        return e.response.status
+        return e.response && e.response.status
     })
 }
 
 const getDetailConversation = (id, token, role) => {
     return axios.get(`/api/get-detail-inbox?id=${id}&role=${role}`, {
-        headers: { Authorization: `Bearer ${token}`}
+        headers: { Authorization: `Bearer ${token}` }
     }).catch(e => {
-        return e.response.status
+        return e.response && e.response.status
     })
 }
 
 const sendMessage = (data) => {
-    return axios.post(`/api/send-message`,data, {
-        headers: { Authorization: `Bearer ${data.token}`}
+    return axios.post(`/api/send-message`, data, {
+        headers: { Authorization: `Bearer ${data.token}` }
     }).catch(e => {
-        return e.response.status
+        return e.response && e.response.status
     })
 }
 
 const getToken = (data) => {
-    return axios.post('/refresh-token', data , {
-        headers: { Authorization: `Bearer ${data.token}`}
+    return axios.post('/refresh-token', data, {
+        headers: { Authorization: `Bearer ${data.token}` }
     }).catch(e => {
-        return e.response.status
+        return e.response && e.response.status
     })
 }
 

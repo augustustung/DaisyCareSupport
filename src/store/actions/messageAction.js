@@ -8,14 +8,14 @@ export const loadConversation = (userId, userRole, token) => async (dispatch) =>
     })
 
     let res = {};
-    if(userRole === "R2")
-        res = await SERVICES.userGetAllAdminOnline(userId, token)
+    if (userRole === "R2")
+        res = await SERVICES.userGetAllAdminOnline(token)
     else
         res = await SERVICES.adminGetAllConversation(userId, token)
-    if(res) {
-        if( res === 401) {
+    if (res) {
+        if (res === 401) {
             let newToken = await refreshToken(userId, token)
-            if(newToken) {
+            if (newToken) {
                 toast.error('Request out of time. Let try again!')
                 dispatch({
                     type: actionTypes.UPDATE_TOKEN,
@@ -25,19 +25,19 @@ export const loadConversation = (userId, userRole, token) => async (dispatch) =>
             //get new token if cant redirect /login
             else
                 clearAll()
-        } else if(res===403) {
+        } else if (res === 403) {
             //force to /login
             clearAll()
         } else {
             dispatch({
                 type: actionTypes.CONVERSATIONS_LOADED,
                 payload: {
-                    conversations: res.data,
-                    selectedConversation: res.data[0]
+                    conversations: res.data && res.data,
+                    selectedConversation: res.data && res.data[0]
                 }
             })
         }
-    } else 
+    } else
         dispatch({
             type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
         })
@@ -65,10 +65,10 @@ export const newMessageAdded = (data) => async (dispatch) => {
     })
 
     let res = await SERVICES.sendMessage(data)
-    if(res) {
-        if( res === 401) {
+    if (res) {
+        if (res === 401) {
             let newToken = await refreshToken(data.userId, data.token)
-            if(newToken) {
+            if (newToken) {
                 toast.error('Request out of time. Let try again!')
                 dispatch({
                     type: actionTypes.UPDATE_TOKEN,
@@ -78,7 +78,7 @@ export const newMessageAdded = (data) => async (dispatch) => {
             //get new token if cant redirect /login
             else
                 clearAll()
-        } else if(res===403) {
+        } else if (res === 403) {
             //force to /login
             clearAll()
         } else {
@@ -86,10 +86,10 @@ export const newMessageAdded = (data) => async (dispatch) => {
                 type: actionTypes.NEW_MESSAGE_ADDED
             })
         }
-    }  else 
-    dispatch({
-        type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
-    })
+    } else
+        dispatch({
+            type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
+        })
 };
 
 export const messagesRequested = (data) => async (dispatch) => {
@@ -98,11 +98,11 @@ export const messagesRequested = (data) => async (dispatch) => {
         type: actionTypes.PROCESS_MESSAGE_ACTION
     })
     let res = await SERVICES.getDetailConversation(conversationId, token, role);
-    if(res) {
-        if( res === 401) {
+    if (res) {
+        if (res === 401) {
             //get new token if cant redirect /login
             let newToken = await refreshToken(userId, token)
-            if(newToken) {
+            if (newToken) {
                 toast.error('Request out of time. Let try again!')
                 dispatch({
                     type: actionTypes.UPDATE_TOKEN,
@@ -112,7 +112,7 @@ export const messagesRequested = (data) => async (dispatch) => {
             //force to /login
             else
                 clearAll()
-        } else if(res===403) {
+        } else if (res === 403) {
             //force to /login
             clearAll()
         } else {
@@ -121,10 +121,10 @@ export const messagesRequested = (data) => async (dispatch) => {
                 payload: res.errCode === 0 ? res.data.messages : [],
             })
         }
-    }  else 
-    dispatch({
-        type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
-    })
+    } else
+        dispatch({
+            type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
+        })
 };
 
 const refreshToken = async (userId, token) => {
@@ -132,7 +132,7 @@ const refreshToken = async (userId, token) => {
         userId: userId,
         token: token
     })
-    if(res === 403) {
+    if (res === 403) {
         clearAll()
         return null
     }

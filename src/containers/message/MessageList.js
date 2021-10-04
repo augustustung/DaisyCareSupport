@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-
-import { messagesRequested } from '../../store/actions';
+import { messagesRequested, newMessageAdded } from '../../store/actions';
 import Message from '../../components/message/Message';
 import './MessageList.scss';
 import FormButton from '../../components/controls/buttons/FormButton';
 import AttachmentIcon from '../../components/controls/icons/attachment-icon/AttachmentIcon';
+import io from 'socket.io-client'
 
 const isMessageEmpty = (textMessage) => {
     return adjustTextMessage(textMessage).length === 0;
@@ -15,6 +15,8 @@ const adjustTextMessage = (textMessage) => {
     return textMessage.trim();
 };
 
+let socket
+
 const MessageList = ({
     conversationId,
     loadMessages,
@@ -23,29 +25,26 @@ const MessageList = ({
     adminId,
     userId,
     userRole,
+    userName,
     token
 }) => {
-    const [messageItems, setMessageItems] = useState(null);
-    const [prevMessage, setPrevMessage] = useState(null)
-    const [prevLength, setPrevLength] = useState(0)
-    const [textMessage, setTextMessage] = useState('');
-    const disableButton = isMessageEmpty(textMessage);
-    const [file, setFile] = useState(null)
-    
-    useEffect(() => {
-        _onReloadMessages()
-    }, [])
+    const [state, setState] = useState({
+        allMessages: [],
+        prevMessage: null,
+        prevLength: 0,
+        textMessage: '',
+        file: null
+    })
 
-    useEffect(() => {
-        if
-        (messageDetails &&
-            messageDetails.length > 0 &&
-            messageDetails[messageDetails.length-1]._id !== prevMessage
-            || messageDetails.length !== prevLength
-        ) {
-            _onReloadMessages()
-        }
-    }, [messageDetails])
+    const {
+        allMessages,
+        prevMessage,
+        prevLength,
+        textMessage,
+        file
+    } = state
+
+    const disableButton = isMessageEmpty(textMessage);
 
     const _onReloadMessages = async () => {
         await loadMessages({
@@ -53,23 +52,57 @@ const MessageList = ({
             token: token,
             role: userRole,
             userId: userId
-        });
+        })
+
         if (messageDetails && messageDetails.length > 0) {
-            const itemMap = await messageDetails.map((message, index) => {
-                return <Message
-                    key={index}
-                    isMyMessage={message.senderId === userId}
-                    message={message} />;
-            })
-            setPrevMessage(messageDetails[messageDetails.length-1]._id)
-            setMessageItems(itemMap)
-            setPrevLength(messageDetails.length)
+            setState(prev => ({
+                ...prev,
+                textMessage: '',
+                file: null,
+                allMessages: messageDetails,
+                prevLength: messageDetails.length,
+                prevMessage: messageDetails[messageDetails.length - 1]._id
+            }))
         } else {
-            setPrevLength(null)
-            setPrevMessage(null)
-            setMessageItems(null)
+            allMessages.length > 0 && setState(prev => ({
+                ...prev,
+                prevLength: 0,
+                prevMessage: null,
+                allMessages: []
+            }))
         }
     }
+
+    useEffect(() => {
+        socket = io("http://192.168.1.103:8080")
+
+        socket.emit('join', { userId: userId, userName: userName, roomId: conversationId }, (e) => {
+            e && alert('connect error', e)
+            _onReloadMessages()
+        })
+
+        return () => {
+            socket.disconnect()
+            socket.off()
+        }
+    }, [])
+
+    useEffect(() => {
+        socket.once('receiveMessage', async () => {
+            await _onReloadMessages();
+        })
+    }, [_onReloadMessages])
+
+    useEffect(() => {
+        if
+            (messageDetails &&
+            messageDetails.length > 0 &&
+            (messageDetails[messageDetails.length - 1]._id !== prevMessage
+                || messageDetails.length !== prevLength)
+        ) {
+            _onReloadMessages()
+        }
+    }, [messageDetails, prevLength, prevMessage, _onReloadMessages])
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -81,24 +114,42 @@ const MessageList = ({
                 userId: userId,
                 createdAt: new Date(),
                 token: token,
-                adminId:adminId._id
+                adminId: adminId._id
             });
-            setTextMessage('');
-            setFile(null)
-            await _onReloadMessages()
+            await socket.emit('sendMessage',
+                { roomId: conversationId, senderId: userId },
+                async (senderId) => {
+                    if (senderId === userId)
+                        await _onReloadMessages()
+                })
         }
     };
 
-    const _onChooseFile = (e) => {
-        let file = e.target.files[0]
-        setFile(file)
+    const _onChooseFile = async (e) => {
+        let attachment = e.target.files[0]
+        setState(prev => ({ ...prev, file: attachment }))
         //convert to blob
+        const fetchFile = await fetch(file).then(res => res.arrayBuffer());
+        console.log(fetchFile);
+    }
+
+    const _onChangeTextInput = (e) => {
+        const { value, name } = e.target
+        setState(prev => ({
+            ...prev,
+            [name]: value
+        }))
     }
 
     return (
         <>
             <div id="chat-message-list">
-                {messageItems}
+                {allMessages.length > 0 && allMessages.map((message, index) => {
+                    return <Message
+                        key={index}
+                        isMyMessage={message.senderId === userId}
+                        message={message} />;
+                })}
             </div>
             <form id="chat-form" onSubmit={handleFormSubmit}>
                 <div title="Add Attachment">
@@ -108,7 +159,8 @@ const MessageList = ({
                     type="text"
                     placeholder="type a message"
                     value={textMessage}
-                    onChange={(e) => setTextMessage(e.target.value)} />
+                    name="textMessage"
+                    onChange={_onChangeTextInput} />
                 <FormButton disabled={disableButton}>Send</FormButton>
             </form>
         </>
@@ -120,13 +172,15 @@ const mapStateToProps = state => {
         messageDetails: state.messagesState.messageDetails,
         userId: state.userState.userId,
         userRole: state.userState.userRole,
-        token: state.userState.token
+        token: state.userState.token,
+        userName: state.userState.fullName
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        loadMessages: (data) => dispatch(messagesRequested(data))
+        loadMessages: (data) => dispatch(messagesRequested(data)),
+        onMessageSubmitted: (data) => dispatch(newMessageAdded(data))
     };
 }
 

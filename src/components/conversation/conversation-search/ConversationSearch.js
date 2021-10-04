@@ -1,17 +1,12 @@
-import React from 'react';
-
+import React, { useState } from 'react';
 import './ConversationSearch.scss';
 
 const ConversationSearch = ({ conversations }) => {
-    let searchInput = null;
-
-    if (conversations && conversations.length > 0) {
-        searchInput = <input type="text" placeholder="Search" />;
-    }
+    const [searchInput, setSearchInput] = useState('')
 
     return (
         <div id="search-container">
-            { searchInput }
+            {conversations && conversations.length > 0 && <input type="text" placeholder="Search" />}
         </div>
     );
 }

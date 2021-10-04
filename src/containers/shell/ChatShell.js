@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import {
     conversationChanged,
-    newMessageAdded,
     conversationDeleted,
     loadConversation,
     HandleSignOut
@@ -21,7 +20,6 @@ const ChatShell = ({
     conversations,
     selectedConversation,
     conversationChanged,
-    onMessageSubmitted,
     onDeleteConversation,
     loadConversations,
     onLogout,
@@ -32,24 +30,6 @@ const ChatShell = ({
     useEffect(() => {
         loadConversations(userId, userRole, token);
     }, [loadConversations]);
-
-    let conversationContent = (
-        <>
-            <NoConversations></NoConversations>
-        </>
-    );
-
-    if (conversations.length > 0) {
-        conversationContent = (
-            <>
-                <MessageList
-                    conversationId={selectedConversation._id}
-                    onMessageSubmitted={onMessageSubmitted}
-                    adminId={selectedConversation.adminId}
-                />
-            </>
-        );
-    }
 
     return (
         <div id="chat-container">
@@ -65,7 +45,16 @@ const ChatShell = ({
                 selectedConversation={selectedConversation}
                 onDeleteConversation={onDeleteConversation}
             />
-            {conversationContent}
+            {
+                conversations.length > 0 ? (
+                    <MessageList
+                        conversationId={selectedConversation._id}
+                        adminId={selectedConversation.adminId}
+                    />
+                ) : (
+                    <NoConversations />
+                )
+            }
         </div>
     );
 }
@@ -82,7 +71,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
     conversationChanged: (data) => dispatch(conversationChanged(data)),
-    onMessageSubmitted: (data) => dispatch(newMessageAdded(data)),
     onDeleteConversation: () => dispatch(conversationDeleted()),
     loadConversations: (userId, userRole, token) => dispatch(loadConversation(userId, userRole, token)),
     onLogout: (userId) => dispatch(HandleSignOut(userId))

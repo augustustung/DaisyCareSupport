@@ -3,7 +3,7 @@ import actionTypes from "../actions/actionTypes"
 const initialState = {
     isUserLoggedIn: !!window.localStorage.getItem('isUserLoggedIn'),
     email: window.localStorage.getItem('email') || '',
-    fullName: window.localStorage.getItem('lastName') || '',
+    fullName: window.localStorage.getItem('fullName') || '',
     token: window.localStorage.getItem('token') || '',
     userId: window.localStorage.getItem('userId') || '',
     lastActiveAt: window.localStorage.getItem('lastActiveAt') || '',

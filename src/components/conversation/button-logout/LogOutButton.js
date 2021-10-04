@@ -10,7 +10,7 @@ const LogOutButton = ({ onLogout }) => {
     return (
         <div id="new-message-container">
             <button onClick={() => onLogout(userId)}>
-                <img src="https://img.icons8.com/flat-round/64/000000/shutdown--v1.png" />
+                <img src="https://img.icons8.com/flat-round/64/000000/shutdown--v1.png" alt="Logout" />
             </button>
         </div>
     );
