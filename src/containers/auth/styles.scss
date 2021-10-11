@@ -9,15 +9,15 @@
         z-index      : 1;
         width        : 0;
         height       : 0;
-        border-bottom: 50vw solid red;
-        border-right : 50vw solid transparent;
+        border-bottom: 1500px solid red;
+        border-right : 950px solid transparent;
         right        : 0;
         bottom       : 0;
     }
 
     .bg2 {
-        border-top : 47vw solid #000333;
-        border-left: 50vw solid transparent;
+        border-top : 720px solid #000333;
+        border-left: 720px solid transparent;
         top        : 0;
         position   : absolute;
         z-index    : 1;
@@ -29,7 +29,8 @@
     .content-left {
         z-index            : 2;
         float              : left;
-        width              : 60vw;
+        margin-left: -200px !important;
+        width              : 70vw;
         background-size    : cover;
         background-position: inherit;
         background-position: initial;
@@ -37,6 +38,7 @@
         background-image   : url('../../images/hospital.jpg');
         height             : 100vh;
         flex               : 1;
+        margin-right: 20px;
     }
 
     .content-right {

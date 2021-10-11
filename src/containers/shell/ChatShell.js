@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -13,6 +13,7 @@ import ConversationList from '../../components/conversation/conversation-list/Co
 import LogoutButton from '../../components/conversation/button-logout/LogOutButton';
 import ChatTitle from '../../components/chat-title/ChatTitle';
 import MessageList from '../message/MessageList';
+import CustomModal from '../../components/modal'
 
 import './ChatShell.scss';
 
@@ -31,7 +32,12 @@ const ChatShell = ({
         loadConversations(userId, userRole, token);
     }, [loadConversations]);
 
+    const [modal, setModal] = useState(true);
+
+    const toggle = () => setModal(!modal);
+
     return (
+        <>
         <div id="chat-container">
             <ConversationSearch conversations={conversations} />
             <ConversationList
@@ -56,6 +62,8 @@ const ChatShell = ({
                 )
             }
         </div>
+        <CustomModal toggle={toggle} modal={modal}/>
+        </>
     );
 }
 

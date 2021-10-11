@@ -13,13 +13,14 @@ body {
 
 html {
   font-family: Arial, Helvetica, sans-serif;
-  background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%);
+  background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%) !important;
   font-size  : 10px;
 }
 
 body {
   display        : flex;
   justify-content: center;
+  background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%) !important;
 }
 
 #root {

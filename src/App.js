@@ -5,6 +5,7 @@ import { Forget, Login } from './containers/auth'
 import ChatShell from './containers/shell/ChatShell'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
   const { isUserLoggedIn } = useSelector(state => state.userState)
