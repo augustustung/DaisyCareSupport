@@ -45,7 +45,7 @@ const MessageList = ({
 
     const disableButton = isMessageEmpty(textMessage);
 
-    const _onReloadMessages = async (skip) => {
+    const _onReloadMessages = async (skip, isConcat) => {
         let message = await messagesRequested({
             conversationId: conversationId,
             token: token,
@@ -58,18 +58,18 @@ const MessageList = ({
                 ...prev,
                 textMessage: '',
                 file: null,
-                allMessages: [...state.allMessages, ...message]
+                allMessages: isConcat ? [...state.allMessages, ...message] : message
             }))
         }
     }
 
     useEffect(() => {
-        _onReloadMessages(0)
+        _onReloadMessages(0, false)
     }, [])
 
     useEffect(() => {
         if (conversationId) {
-            _onReloadMessages(0)
+            _onReloadMessages(0, false)
         }
     }, [conversationId])
 
@@ -191,7 +191,7 @@ const MessageList = ({
                 ...state,
                 skip: newSkip
             })
-            await _onReloadMessages(newSkip)
+            await _onReloadMessages(newSkip, true)
         }
     }
 
