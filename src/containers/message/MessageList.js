@@ -45,7 +45,7 @@ const MessageList = ({
 
     const disableButton = isMessageEmpty(textMessage);
 
-    const _onReloadMessages = async (skip, isConcat) => {
+    const _onReloadMessages = async (skip) => {
         let message = await messagesRequested({
             conversationId: conversationId,
             token: token,
@@ -58,18 +58,36 @@ const MessageList = ({
                 ...prev,
                 textMessage: '',
                 file: null,
-                allMessages: isConcat ? [...state.allMessages, ...message] : message
+                allMessages: message
+            }))
+        }
+    }
+
+    const onScrollFetchData = async (skip) => {
+        let message = await messagesRequested({
+            conversationId: conversationId,
+            token: token,
+            role: userRole,
+            userId: userId,
+            skip: skip
+        }, dispatch)
+        if (message && message.length > 0) {
+            setState(prev => ({
+                ...prev,
+                textMessage: '',
+                file: null,
+                allMessages:  [...state.allMessages, ...message]
             }))
         }
     }
 
     useEffect(() => {
-        _onReloadMessages(0, false)
+        _onReloadMessages(0)
     }, [])
 
     useEffect(() => {
         if (conversationId) {
-            _onReloadMessages(0, false)
+            _onReloadMessages(0)
         }
     }, [conversationId])
 
@@ -167,9 +185,6 @@ const MessageList = ({
                     "senderId": userId
                 }
                 inputFileRef.current.value = ''
-                console.log(inputFileRef.current)
-                console.log(inputFileRef.current.value)
-                console.log(inputFileRef)
                 await handleSendMessage(dataMessage)
             };
         })
@@ -191,7 +206,7 @@ const MessageList = ({
                 ...state,
                 skip: newSkip
             })
-            await _onReloadMessages(newSkip, true)
+            await onScrollFetchData(newSkip)
         }
     }
 
