@@ -60,6 +60,11 @@ const MessageList = ({
                 file: null,
                 allMessages: message
             }))
+        } else {
+            setState({
+                ...state,
+                allMessages: []
+            })
         }
     }
 
