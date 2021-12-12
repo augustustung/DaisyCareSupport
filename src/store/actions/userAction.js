@@ -16,11 +16,11 @@ const HandleSignIn = (res) => (dispatch) => {
 
 const HandleSignOut = (userId) => {
     return async (dispatch) => {
-        await SignOutService(userId)
-
         dispatch({
             type: 'USER_RESET'
         })
+        await SignOutService(userId)
+
     }
 }
 

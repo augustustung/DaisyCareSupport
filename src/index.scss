@@ -21,6 +21,8 @@ body {
   display        : flex;
   justify-content: center;
   background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%) !important;
+  min-width: 1200px;
+  min-height: 713px;
 }
 
 #root {

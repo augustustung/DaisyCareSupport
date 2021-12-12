@@ -32,8 +32,7 @@ export const loadConversation = (userId, userRole, token) => async (dispatch) =>
             dispatch({
                 type: actionTypes.CONVERSATIONS_LOADED,
                 payload: {
-                    conversations: res.data && res.data,
-                    selectedConversation: res.data && res.data[0]
+                    conversations: res.data && res.data
                 }
             })
         }
@@ -44,7 +43,6 @@ export const loadConversation = (userId, userRole, token) => async (dispatch) =>
 }
 
 export const conversationChanged = (data) => async (dispatch) => {
-    dispatch(messagesRequested(data))
     dispatch({
         type: 'SELECTED_CONVERSATION_CHANGED',
         conversationId: data.conversationId
@@ -92,12 +90,16 @@ export const newMessageAdded = (data) => async (dispatch) => {
         })
 };
 
-export const messagesRequested = (data) => async (dispatch) => {
-    const { conversationId, token, role, userId } = data
-    dispatch({
-        type: actionTypes.PROCESS_MESSAGE_ACTION
-    })
-    let res = await SERVICES.getDetailConversation(conversationId, token, role);
+export const messagesRequested = async (data, dispatch) => {
+    const { conversationId, token, role, userId, skip } = data
+
+    const messageData = {
+        skip: skip,
+        limit: 10,
+        id: conversationId,
+        role: role
+    }
+    let res = await SERVICES.getDetailConversation(messageData, token);
     if (res) {
         if (res === 401) {
             //get new token if cant redirect /login
@@ -116,15 +118,10 @@ export const messagesRequested = (data) => async (dispatch) => {
             //force to /login
             clearAll()
         } else {
-            dispatch({
-                type: actionTypes.MESSAGES_REQUESTED,
-                payload: res.errCode === 0 ? res.data.messages : [],
-            })
+            return res.errCode === 0 ? res.data.messages : []
         }
-    } else
-        dispatch({
-            type: actionTypes.PROCESS_MESSAGE_ACTION_FAILED
-        })
+    }
+    return []
 };
 
 const refreshToken = async (userId, token) => {
@@ -132,14 +129,20 @@ const refreshToken = async (userId, token) => {
         userId: userId,
         token: token
     })
-    if (res === 403) {
+    if (res && res.token) {
+        return res.token;
+    } else {
         clearAll()
         return null
     }
-    return res.token;
 }
 
 const clearAll = () => {
     window.localStorage.clear()
     window.location.href = '/login'
 }
+
+export const handleChangeLastMessage = (data) => ({
+    type: actionTypes.CHANGE_LAST_MESSAGE,
+    data: data
+})

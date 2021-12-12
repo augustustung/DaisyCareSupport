@@ -14,9 +14,10 @@ const messagesReducer = (state = initialState, action) => {
         case actionTypes.MESSAGES_REQUESTED:
             return {
                 ...state,
-                messageDetails: action.payload
+                messageDetails: action.payload,
+                isLoading: false
             }
-        case actionTypes.NEW_MESSAGE_ADDED: 
+        case actionTypes.NEW_MESSAGE_ADDED:
             return {
                 ...state,
                 isLoading: false

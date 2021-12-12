@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: "https://daisycare-support.herokuapp.com"
+    baseURL: process.env.REACT_APP_API_URL || "https://daisycare-support.herokuapp.com"
 });
 
 instance.interceptors.response.use(

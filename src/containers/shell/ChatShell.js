@@ -5,7 +5,8 @@ import {
     conversationChanged,
     conversationDeleted,
     loadConversation,
-    HandleSignOut
+    HandleSignOut,
+    handleChangeLastMessage
 } from '../../store/actions';
 import ConversationSearch from '../../components/conversation/conversation-search/ConversationSearch';
 import NoConversations from '../../components/conversation/no-conversations/NoConversations';
@@ -26,43 +27,50 @@ const ChatShell = ({
     onLogout,
     userRole,
     userId,
-    token
+    token,
+    handleChangeLastMessage
 }) => {
     useEffect(() => {
         loadConversations(userId, userRole, token);
-    }, [loadConversations]);
+    }, [])
 
-    const [modal, setModal] = useState(true);
+    function callOtherSideChange() {
+        loadConversations(userId, userRole, token);
+    }
+
+    const [modal, setModal] = useState(userRole === "R2" ? true : false);
 
     const toggle = () => setModal(!modal);
 
     return (
         <>
-        <div id="chat-container">
-            <ConversationSearch conversations={conversations} />
-            <ConversationList
-                onConversationItemSelected={conversationChanged}
-                conversations={conversations}
-                selectedConversation={selectedConversation} />
-            <LogoutButton
-                onLogout={onLogout}
-            />
-            <ChatTitle
-                selectedConversation={selectedConversation}
-                onDeleteConversation={onDeleteConversation}
-            />
-            {
-                conversations.length > 0 ? (
-                    <MessageList
-                        conversationId={selectedConversation._id}
-                        adminId={selectedConversation.adminId}
-                    />
-                ) : (
-                    <NoConversations />
-                )
-            }
-        </div>
-        <CustomModal toggle={toggle} modal={modal}/>
+            <div id="chat-container">
+                <ConversationSearch conversations={conversations} />
+                <ConversationList
+                    onConversationItemSelected={conversationChanged}
+                    conversations={conversations}
+                    selectedConversation={selectedConversation} />
+                <LogoutButton
+                    onLogout={onLogout}
+                />
+                <ChatTitle
+                    selectedConversation={selectedConversation}
+                    onDeleteConversation={onDeleteConversation}
+                />
+                {
+                    conversations.length > 0 ? (
+                        <MessageList
+                            conversationId={(selectedConversation && selectedConversation._id) || ''}
+                            adminId={(selectedConversation && selectedConversation.adminId) || ''}
+                            handleChangeLastMessage={handleChangeLastMessage}
+                            callOtherSideChange={callOtherSideChange}
+                        />
+                    ) : (
+                        <NoConversations />
+                    )
+                }
+            </div>
+            <CustomModal toggle={toggle} modal={modal} />
         </>
     );
 }
@@ -81,7 +89,8 @@ const mapDispatchToProps = dispatch => ({
     conversationChanged: (data) => dispatch(conversationChanged(data)),
     onDeleteConversation: () => dispatch(conversationDeleted()),
     loadConversations: (userId, userRole, token) => dispatch(loadConversation(userId, userRole, token)),
-    onLogout: (userId) => dispatch(HandleSignOut(userId))
+    onLogout: (userId) => dispatch(HandleSignOut(userId)),
+    handleChangeLastMessage: (data) => dispatch(handleChangeLastMessage(data))
 });
 
 export default connect(

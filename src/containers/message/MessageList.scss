@@ -9,6 +9,25 @@ $chat-form-top-border: darken($accent-color, 12.16);
   flex-direction: column-reverse;
   padding       : 0 20px;
   overflow-y    : scroll;
+
+  &::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+    height: 8px;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ddd;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+  }
+
+  .message-row:last-child {
+    margin-top: 20px;
+  }
 }
 
 

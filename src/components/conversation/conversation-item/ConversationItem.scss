@@ -8,8 +8,7 @@
     font-size: 1.3rem;
     border-bottom: 1px solid $primary-dark;
     padding: 20px 20px 20px 15px;
-
-  &.active,
+  &.selected,
   &:hover {
     background: $primary-dark;
   }

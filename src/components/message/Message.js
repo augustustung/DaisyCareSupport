@@ -12,17 +12,17 @@ const Message = ({ isMyMessage, message }) => {
     });
 
     const { userRole } = useSelector(state => state.userState)
-    
+
     const imageThumbnail = isMyMessage
         ? null
-        : <img src={userRole==="R2" ? imageAdmin : imageUser } alt={'imageAlt'} />;
+        : <img src={userRole === "R2" ? imageAdmin : imageUser} alt={'imageAlt'} />;
 
     return (
         <div className={messageClass}>
             <div className="message-content">
                 {imageThumbnail}
                 <div className="message-text">
-                    {message.text}
+                    {message.image ? <img src={message.image} className='w-100' /> : message.text}
                 </div>
                 <div className="message-time">{moment(message.createdAt).startOf('second').fromNow()}</div>
             </div>

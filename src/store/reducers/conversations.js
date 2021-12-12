@@ -1,3 +1,5 @@
+import actionTypes from "../actions/actionTypes";
+
 const initialState = {
     conversations: [],
     selectedConversation: {}
@@ -10,8 +12,7 @@ const conversationsReducer = (state = initialState, action) => {
         case 'CONVERSATIONS_LOADED':
             return {
                 ...state,
-                conversations: action.payload.conversations ? action.payload.conversations : [],
-                selectedConversation: action.payload.selectedConversation
+                conversations: action.payload.conversations ? action.payload.conversations : []
             };
         case 'SELECTED_CONVERSATION_CHANGED':
             let newselectedConversation =
@@ -46,6 +47,16 @@ const conversationsReducer = (state = initialState, action) => {
             }
 
             return state;
+        }
+        case actionTypes.CHANGE_LAST_MESSAGE: {
+            let findConversation = state.conversations.find(item => {
+                return item._id.toString() === action.data.id
+            })
+            findConversation.latestMessageText = action.data.newMessage
+            state.selectedConversation.latestMessageText = action.data.newMessage
+            return {
+                ...state
+            }
         }
         default:
             return state;

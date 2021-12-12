@@ -16,8 +16,8 @@ const adminGetAllConversation = (adminId, token) => {
     })
 }
 
-const getDetailConversation = (id, token, role) => {
-    return axios.get(`/api/get-detail-inbox?id=${id}&role=${role}`, {
+const getDetailConversation = (data, token) => {
+    return axios.post(`/api/get-detail-inbox`, data, {
         headers: { Authorization: `Bearer ${token}` }
     }).catch(e => {
         return e.response && e.response.status
