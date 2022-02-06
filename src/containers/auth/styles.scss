@@ -1,38 +1,16 @@
 .container {
+    width: 100vw;
     border-radius : 5px;
     flex-direction: row;
     display       : flex;
     width         : 100vw;
 
-    .bg {
-        position     : absolute;
-        z-index      : 1;
-        width        : 0;
-        height       : 0;
-        border-bottom: 1500px solid red;
-        border-right : 950px solid transparent;
-        right        : 0;
-        bottom       : 0;
-    }
-
-    .bg2 {
-        border-top : 720px solid #000333;
-        border-left: 720px solid transparent;
-        top        : 0;
-        position   : absolute;
-        z-index    : 1;
-        width      : 0;
-        height     : 0;
-        right      : 0;
-    }
-
     .content-left {
         z-index            : 2;
         float              : left;
         margin-left: -200px !important;
-        width              : 70vw;
-        background-size    : cover;
-        background-position: inherit;
+        // width              : 70vw;
+        background-size    :cover;
         background-position: initial;
         background-repeat  : no-repeat;
         background-image   : url('../../images/hospital.jpg');
@@ -131,16 +109,17 @@
                 align-self    : center;
 
                 .ios-app {
-                    background     : url('../../images/appstore.png') center center no-repeat;
+                    background     : url('../../images/app-store-badge-black.svg') center center no-repeat;
                     width          : 110px;
                     height         : 32px;
                     cursor         : pointer;
                     background-size: cover;
                     margin-right   : 25px;
+                    margin-left: 10px;
                 }
 
                 .android-app {
-                    background     : url('../../images/google-play.png') center no-repeat;
+                    background     : url('../../images/google-play-badge.svg') center no-repeat;
                     width          : 110px;
                     height         : 32px;
                     cursor         : pointer;

@@ -13,14 +13,18 @@ body {
 
 html {
   font-family: Arial, Helvetica, sans-serif;
-  background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%) !important;
+  background-image   : url('../src/images/hospital.jpg');
+  background-repeat: no-repeat;
+  background-size:cover;
   font-size  : 10px;
 }
 
 body {
   display        : flex;
   justify-content: center;
-  background : linear-gradient(to right, $sky-blue 0%, $sky-dark-blue 100%) !important;
+  background-repeat: no-repeat;
+  background-size:cover;
+  background-image   : url('../src/images/hospital.jpg');
   min-width: 1200px;
   min-height: 713px;
 }
