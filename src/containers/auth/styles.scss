@@ -1,9 +1,7 @@
 .container {
-    width: 100vw;
     border-radius : 5px;
     flex-direction: row;
     display       : flex;
-    width         : 100vw;
 
     .content-left {
         z-index            : 2;
@@ -21,13 +19,11 @@
 
     .content-right {
         z-index         : 2;
-        position        : relative;
         border-radius   : 5px;
         align-self      : center;
-        width           : 30vw;
-        margin          : 0 5%;
+        min-width           : 25vw;
+        margin: 0 auto;
         height          : 80vh;
-        float           : right;
         background-color: #fff;
         padding         : 40px 40px 25px;
 
